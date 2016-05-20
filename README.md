@@ -5,7 +5,7 @@ The evaluation function for this project is to calculate the sum of distance
 which between every checker.
 ------------------------------------------------------------------------
 
-PROJECT TITLE: Lines of actions
+#PROJECT TITLE: Lines of actions
 PURPOSE OF PROJECT: Get a deeper understanding about Alpha-beta pruning algorithm
 VERSION or DATE: v1.0 2016-05-16
 HOW TO START THIS PROJECT: 
