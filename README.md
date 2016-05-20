@@ -8,6 +8,7 @@
 ###USER INSTRUCTIONS:
 1. Please download Greenfoot and install it on your computer.
 2. Find a file in the folder called project.greenfoot, project will be opened by double-clicking it.
+
 ------------------------------------------------------------------------------------------------------------
 ####PURPOSE OF PROJECT: 
 	Get a deeper understanding about Alpha-beta pruning algorithm
