@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=Step
+comment1.params=p\ pos\ b
+comment1.target=Step(int,\ Coordinate,\ Board)
+comment1.text=\r\n\ Constructor\r\n\ @param\ p\ current\ player(1\ or\ 2)\r\n\ @param\ pos\ current\ position\ of\ checker\r\n\ @param\ b\ current\ board\r\n
+comment10.params=
+comment10.target=void\ generateHints()
+comment2.params=
+comment2.target=int\ getWhichPlayer()
+comment3.params=whichPlayer
+comment3.target=void\ setWhichPlayer(int)
+comment4.params=
+comment4.target=Coordinate\ getOriginalPos()
+comment5.params=originalPos
+comment5.target=void\ setOriginalPos(Coordinate)
+comment6.params=
+comment6.target=java.util.ArrayList\ getHints()
+comment7.params=hints
+comment7.target=void\ setHints(java.util.ArrayList)
+comment8.params=
+comment8.target=Board\ getBoard()
+comment9.params=board
+comment9.target=void\ setBoard(Board)
+numComments=11

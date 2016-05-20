@@ -1,0 +1,31 @@
+#BlueJ class context
+comment0.target=AlphaBetaApproach
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ AlphaBetaApproach\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=
+comment1.target=AlphaBetaApproach()
+comment10.params=treeDepth
+comment10.target=void\ setTreeDepth(int)
+comment10.text=\ Old\ evaluation\ function,\ useless,\ but\ it\ will\ be\ kept\ for\ reference\r\n\ \ \ \ Move\ findBestMove(State\ state)\ {\r\n\ \ \ \ \ \ \ \ Board\ b\ \=\ new\ Board(state.getBoard());\r\n\r\n\ \ \ \ \ \ \ \ Move\ bestSoFar\ \=\ MIN_MOVE;\r\n\ \ \ \ \ \ \ \ for\ (Move\ move\ \:\ state.getAction())\ {\r\n\r\n\ \ \ \ \ \ \ \ \ \ \ \ b.moveChecker(move,\ state.getCurrentPlayer());\r\n\ \ \ \ \ \ \ \ \ \ \ \ int\ score\ \=\ evaluateFunction(b,\ state.getCurrentPlayer(),\ state.getOpponentPlayer());\r\n\ \ \ \ \ \ \ \ \ \ \ \ move.setUtility(score);\r\n\r\n\ \ \ \ \ \ \ \ \ \ \ \ if\ (score\ >\ bestSoFar.getUtility())\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestSoFar\ \=\ move;\r\n\ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ return\ bestSoFar;\r\n\ \ \ \ }\r\n\r\n\ \ \ \ public\ int\ evaluateFunction(Board\ b,\ int\ currentPlayer,\ int\ opponentPlayer)\ {\r\n\ \ \ \ \ \ \ \ ArrayList<Move>\ allOpponentMoves\ \=\ new\ ArrayList<>();\r\n\ \ \ \ \ \ \ \ ArrayList<Move>\ allMyMoves\ \=\ new\ ArrayList<>();\r\n\r\n\ \ \ \ \ \ \ \ allOpponentMoves\ \=\ b.getAllPossibleMoves(opponentPlayer);\r\n\ \ \ \ \ \ \ \ allMyMoves\ \=\ b.getAllPossibleMoves(currentPlayer);\r\n\r\n\ \ \ \ \ \ \ \ int\ myNumChecker\ \=\ b.CountCheckers(currentPlayer);\r\n\ \ \ \ \ \ \ \ int\ oppoNumChecker\ \=\ b.CountCheckers(opponentPlayer);\r\n\r\n\ \ \ \ \ \ \ \ int\ myScore\ \=\ 0,\ oppoScore\ \=\ 0;\r\n\ \ \ \ \ \ \ \ for\ (int\ i\ \=\ 0;\ i\ <\ b.getLength();\ i++)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ for\ (int\ j\ \=\ 0;\ j\ <\ b.getLength();\ j++)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ At\ the\ edge\ of\ the\ board\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (i\ \=\=\ 0\ ||\ i\ \=\=\ b.getLength()\ -\ 1\ ||\ j\ \=\=\ 0\ ||\ j\ \=\=\ b.getLength()\ -\ 1)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (b.getCell(i,\ j)\ \=\=\ currentPlayer)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myScore++;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\ else\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ oppoScore++;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ At\ one\ step\ inwards\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (i\ \=\=\ 1\ ||\ i\ \=\=\ b.getLength()\ -\ 2\ ||\ j\ \=\=\ 1\ ||\ j\ \=\=\ b.getLength()\ -\ 2)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (b.getCell(i,\ j)\ \=\=\ currentPlayer)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myScore\ +\=\ 2;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\ else\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ oppoScore\ +\=\ 2;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\r\n\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ At\ middle\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (i\ \=\=\ 2\ ||\ i\ \=\=\ b.getLength()\ -\ 3\ ||\ j\ \=\=\ 2\ ||\ j\ \=\=\ b.getLength()\ -\ 3)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (b.getCell(i,\ j)\ \=\=\ currentPlayer)\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myScore\ +\=\ 4;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\ else\ {\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ oppoScore\ +\=\ 4;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ int\ finalScore\ \=\ ((allMyMoves.size()\ +\ myScore)\ *\ 100\ /\ 6)\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\ ((allOpponentMoves.size()\ +\ oppoScore)\ *\ 100\ /\ 6)\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ (allMyMoves.size()\ -\ allOpponentMoves.size())\ *\ 3;\r\n\r\n\ \ \ \ \ \ \ \ return\ finalScore;\r\n}
+comment11.params=
+comment11.target=int\ getTreeDepth()
+comment2.params=currentState\ p
+comment2.target=Move\ runAlphaBeta(State,\ int)
+comment2.text=\r\n\r\n\ @param\ currentState\r\n\ @return\r\n
+comment3.params=state\ alpha\ beta\ depth
+comment3.target=int\ maxValue(State,\ int,\ int,\ int)
+comment4.params=state\ alpha\ beta\ depth
+comment4.target=int\ minValue(State,\ int,\ int,\ int)
+comment4.text=\r\n\ minValue\ is\ for\ AI,\ so\ when\ meet\ the\ terminate\ condition,\ we\ return\ 100\ if\ AI\ win,\ -100\ if\ human\ win\r\n
+comment5.params=state\ move
+comment5.target=State\ result(State,\ Move)
+comment5.text=\r\n\ Find\ the\ result\ of\ next\ move\r\n\ @param\ state\ current\ state\ of\ the\ game\r\n\ @param\ move\ the\ move\ player\ wants\ to\ make\r\n\ @return\ the\ state\ after\ making\ that\ move\r\n
+comment6.params=state
+comment6.target=boolean\ isTerminated(State)
+comment6.text=\r\n\ When\ the\ utility\ reaches\ 1\ for\ current\ state,\ then\ it\ means\ that\ this\ state\ contains\ a\ winner\r\n\ @param\ state\r\n\ @return\r\n
+comment7.params=state\ depth
+comment7.target=boolean\ cutOffTest(State,\ int)
+comment8.params=state\ p
+comment8.target=int\ evalDistance(State,\ int)
+comment9.params=state
+comment9.target=Move\ findBestMove(State)
+numComments=12

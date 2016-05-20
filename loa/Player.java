@@ -1,40 +1,49 @@
-package loa;
-
-import static loa.Side.*;
-
-/** Represents a player.  Extensions of this class do the actual playing.
- *  @author Weier Wan
+import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import java.util.*;
+import java.awt.Point;
+/**
+ * Write a description of class Player here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
  */
-public abstract class Player {
-
-    /** A player that plays the SIDE pieces in GAME. */
-    Player(Side side, Game game) {
-        _side = side;
-        _game = game;
+public class Player extends Actor
+{
+    protected int x = 0;
+    protected int y = 0;
+    protected int gridX = 0;
+    protected int gridY = 0;
+    protected boolean isDragging =  false;
+    private int fromX = -1;
+    private int fromY = -1;
+    private Coordinate coordinate;
+    
+    public Player() {}
+    
+    public Player(int x, int y, int gX, int gY) {
+        this.x = x;
+        this.y = y;
+        this.gridX = gX;
+        this.gridY = gY;
+        this.coordinate = new Coordinate(gX, gY);
     }
+    
+    
+    /**
+     * Act - do whatever the Player wants to do. This method is called whenever
+     * the 'Act' or 'Run' button gets pressed in the environment.
+     */
+    public void act() 
+    {
+        if(Greenfoot.mouseClicked(this)) {
+            ((Background)getWorld()).curSelected.setX(gridX);
+            ((Background)getWorld()).curSelected.setY(gridY);
+            ((Background)getWorld()).someoneGetSelected = true;
+            System.out.println(gridX + "/" + gridY);
+        }
+    }    
+    
 
-    /** Return my next move from the current position in getBoard(), assuming
-     *  that side() == getBoard.turn(). */
-    abstract Move makeMove();
-
-    /** Return which side I'm playing. */
-    Side side() {
-        return _side;
-    }
-
-    /** Return the board I am using. */
-    Board getBoard() {
-        return _game.getBoard();
-    }
-
-    /** Return the game I am playing. */
-    Game getGame() {
-        return _game;
-    }
-
-    /** This player's side. */
-    private final Side _side;
-    /** The game this player is part of. */
-    private Game _game;
-
+    
+    
 }

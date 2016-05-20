@@ -1,418 +1,332 @@
-package loa;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-
-import static loa.Piece.*;
-import static loa.Side.*;
-
-/** Represents the state of a game of Lines of Action. A Board is immutable.
- *  Its MutableBoard subclass allows moves to be made.
- *  @author Weier Wan
+/**
+ * Write a description of class Board here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
  */
-class Board {
+import java.util.ArrayList;
 
-    /** A Board whose initial contents are taken from
-     *  INITIALCONTENTS and in which it is PLAYER's move. The resulting
-     *  Board has
-     *        get(col, row) == INITIALCONTENTS[row-1][col-1]
-     *  Assumes that PLAYER is not null and INITIALCONTENTS is 8x8.
+public class Board {
+    
+    private int[][] map;
+    private int length; //The length of map
+    private Move lastMove = null;
+    //private boolean lastMoveCaptured = false; // A flag which last move is captured a opponent checker
+    //private int turn; // current turn(who are making decision on this state)
+    
+    public Board() {
+        init(5);
+    }
+
+    /**
+     * Copy the layout for some certain state of game to a new board
+     * @param board
      */
-    Board(Piece[][] initialContents, Side player) {
-        assert player != null && initialContents.length == 8;
-        _pieces = new Piece[8][8];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                _pieces[i][j] = initialContents[i][j];
+    public Board(Board board) {
+        map = new int[board.getLength()][board.getLength()];
+        for (int i = 0; i < board.getLength(); i++) {
+            for (int j = 0; j < board.getLength(); j++) {
+                this.map[i][j] = board.getCell(i, j);
             }
         }
-        _turn = player;
+        length = board.getLength();
+        //turn = board.getTurn();
+    }
+    
+    /**
+     * initial board width
+     * @param n how many cells per row(default 5)
+     */
+    private void init(int n) {
+        map = new int[n][n];
+        for(int i = 1; i < n - 1; i++) {
+            map[0][i] = 1;
+            map[n-1][i] = 1;
+            map[i][0] = 2;
+            map[i][n-1] = 2;
+        }
+        setLength(n);
+    }
+    
+    public void printMap() {
+        for(int i = 0; i < map.length; i++) {
+            for(int j = 0; j < map.length; j++) {
+                if (map[i][j] == 0) {
+                    System.out.print(" |");
+                } else {
+                    System.out.print(map[i][j]+ "|");
+                }
+
+            }
+            System.out.println();
+        }
     }
 
-    /** A new board in the standard initial position. */
-    Board() {
-        this(INITIAL_PIECES, BLACK);
+    /**
+     * Get the value of (x, y) position
+     * @param x
+     * @param y
+     * @return The value in this cell of the board
+     */
+    public int getCell(int x, int y) {
+        return map[x][y];
+    }
+    
+    public int getLength() {
+        return length;
     }
 
-    /** A Board whose initial contents and state are copied from
-     *  BOARD. */
-    Board(Board board) {
-        this(board.getBoard(), board.turn());
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    /** Return the contents of column C, row R, where 1 <= C,R <= 8,
-     *  where column 1 corresponds to column 'a' in the standard
-     *  notation. */
-    Piece get(int c, int r) {
-        assert 1 <= c && c <= 8 && 1 <= r && r <= 8;
-        return _pieces[r - 1][c - 1];
+    /**
+     * Select particular position of checker
+     * @param p current player
+     * @param x 
+     * @param y
+     * @return Can this player select this checker or not(Is this checker belongs to this player)
+     */
+    public boolean selectChecker(int p, int x, int y) {
+        if (map[x][y] != p) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    /** Return the contents of the square SQ.  SQ must be the
-     *  standard printed designation of a square (having the form cr,
-     *  where c is a letter from a-h and r is a digit from 1-8). */
-    Piece get(String sq) {
-        return get(col(sq), row(sq));
-    }
-
-    /** Return the column number (a value in the range 1-8) for SQ.
-     *  SQ is as for {@link get(String)}. */
-    static int col(String sq) {
-        return sq.charAt(0) - 'a' + 1;
-    }
-
-    /** Return the row number (a value in the range 1-8) for SQ.
-     *  SQ is as for {@link get(String)}. */
-    static int row(String sq) {
-        return sq.charAt(1) - '1' + 1;
-    }
-
-    /** Return the Side that is currently next to move. */
-    Side turn() {
-        return _turn;
-    }
-
-    /** Return true iff MOVE is legal for the player currently on move. */
-    boolean isLegal(Move move) {
-        int r0 = move.getRow0() - 1;
-        int c0 = move.getCol0() - 1;
-        if (_pieces[r0][c0].side() != _turn) {
+    /**
+     * Move particular checker
+     * @param p Current Player
+     * @param x Original x position
+     * @param y Original y position
+     * @param newX Target x position
+     * @param newY Target y position
+     * @return True if successfully moved selected checker
+     */
+    public boolean moveChecker(int p, int x, int y, int newX, int newY) {
+        if (selectChecker(p, x, y)) {
+            map[x][y] = 0;
+            map[newX][newY] = p;
+            return true;
+        } else {
             return false;
         }
-        int ver = move.getRow1() - 1 - r0;
-        int hor = move.getCol1() - 1 - c0;
+    }
+
+    /**
+     * return the current board
+     * @return current board
+     */
+    public int[][] currentBoard() {
+        return map;
+    }
+
+    /**
+     * Check after player made a move
+     * @param player
+     * @return
+     */
+    public boolean isWin(int player) {
+        boolean result = false;
+        int[][] temp = new int[map.length][map.length];
+        // assign current layout to temp board
+        for (int i = 0; i < temp.length; i++) {
+            for (int j = 0; j < temp.length; j++) {
+                if (map[i][j] == player) {
+                    temp[i][j] = player;
+                }
+            }
+        }
         int count = 0;
-        if (ver == 0 && hor != 0) {
-            for (Piece p : _pieces[r0]) {
-                if (p != EMP) {
+        for (int i = 0; i < temp.length; i++) {
+            for (int j = 0; j < temp.length; j++) {
+                if (temp[i][j] == player) {
+                    mark(temp, i, j, player);
                     count++;
                 }
-            }
-            if (Math.abs(hor) != count) {
-                return false;
-            }
-        } else if (hor == 0 && ver != 0) {
-            for (Piece[] p : _pieces) {
-                if (p[c0] != EMP) {
-                    count++;
-                }
-            }
-            if (Math.abs(ver) != count) {
-                return false;
-            }
-        } else if (hor == ver && hor != 0) {
-            for (int i = 0; i < 8; i++) {
-                int c = c0 - r0 + i;
-                if (c >= 0 && c < 8 && _pieces[i][c] != EMP) {
-                    count++;
-                }
-            }
-            if (Math.abs(hor) != count) {
-                return false;
-            }
-        } else if (hor == -ver && hor != 0) {
-            for (int i = 0; i < 8; i++) {
-                int c = r0 + c0 - i;
-                if (c >= 0 && c < 8 && _pieces[i][c] != EMP) {
-                    count++;
-                }
-            }
-            if (Math.abs(hor) != count) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-        return isLegal(r0, c0, ver, hor, count);
-    }
-
-    /** Return true if the move from _pieces[ROW][COL] to
-     *  _pieces[ROW+VER][COL+HOR] is legal. NUM is the number of moves,
-     */
-    boolean isLegal(int row, int col, int ver, int hor, int num) {
-        if (_pieces[row + ver][col + hor].side() == _turn) {
-            return false;
-        } else {
-            int count = Math.max(Math.abs(hor), Math.abs(ver));
-            for (int i = 1; i < count; i++) {
-                if (_pieces[row + i * (ver / count)][col
-                            + i * (hor / count)].side() == _turn.opponent()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /** Return a sequence of all legal from this position. */
-    List<Move> legalMoves() {
-        List<Move> lm = new ArrayList<Move>();
-        List<Move> m;
-        int[] numPInLine = accumNumInLine();
-        for (int i = 0; i < LENGTH; i++) {
-            for (int j = 0; j < LENGTH; j++) {
-                if (_pieces[i][j].side() == _turn) {
-                    m = findMoves(i, j, numPInLine);
-                    lm.addAll(m);
-                }
-            }
-        }
-        return lm;
-    }
-
-    /** Return the number of pieces in each line as
-     *  a sequence of integer. */
-    int[] accumNumInLine() {
-        int[] result = new int[LENGTH * 2 + (LENGTH * 2 - 1) * 2];
-        for (int i = 0; i < LENGTH; i++) {
-            for (int j = 0; j < LENGTH; j++) {
-                if (_pieces[i][j] != EMP) {
-                    result[i]++;
-                    result[LENGTH + j]++;
-                    result[LENGTH * 2 + i + j]++;
-                    result[LENGTH * 4 - 1 + (i - j + LENGTH - 1)]++;
-                }
-            }
-        }
-        return result;
-    }
-
-    /** Return all legal moves from _pieces[R][C]. P is a sequence
-     * of integer returned by accumNumInLine().
-     */
-    List<Move> findMoves(int r, int c, int[] p) {
-        assert r >= 0 && r < LENGTH && c >= 0 && c < LENGTH;
-        List<Move> moves = new ArrayList<Move>();
-        int hor = p[r];
-        int ver = p[LENGTH + c];
-        int up = p[LENGTH * 2 + r + c];
-        int down = p[LENGTH * 4 - 1 + (r - c + LENGTH - 1)];
-        findMoves(r, c, hor, 0, moves);
-        findMoves(r, c, -hor, 0, moves);
-        findMoves(r, c, 0, ver, moves);
-        findMoves(r, c, 0, -ver, moves);
-        findMoves(r, c, up, -up, moves);
-        findMoves(r, c, -up, up, moves);
-        findMoves(r, c, down, down, moves);
-        findMoves(r, c, -down, -down, moves);
-        return moves;
-    }
-
-    /** Add the move from _pieces[ROW][COL] to _pieces[ROW+VER][COL+HOR]
-     *  to MOVES if the move is legal.
-     */
-    void findMoves(int row, int col, int hor, int ver, List<Move> moves) {
-        boolean legal = true;
-        if (col + hor > 7 || row + ver > 7 || col + hor < 0 || row + ver < 0
-                || _pieces[row + ver][col + hor].side() == _turn) {
-            legal = false;
-        } else {
-            int count = Math.max(Math.abs(hor), Math.abs(ver));
-            int hIncr = hor / count;
-            int vIncr = ver / count;
-            for (int k = 1; k < count; k++) {
-                if (_pieces[row + (vIncr * k)][col + (hIncr * k)].side()
-                        == _turn.opponent()) {
-                    legal = false;
+                if (count > 1) {
                     break;
                 }
             }
-            if (legal) {
-                moves.add(Move.create
-                    (col + 1, row + 1, col + hor + 1, row + ver + 1));
+
+            if (count > 1) {
+                break;
             }
         }
-    }
-
-    /** Return true iff the game is currently over.  A game is over if
-     *  either player has all his pieces continguous. */
-    boolean gameOver() {
-        return piecesContiguous(BLACK) || piecesContiguous(WHITE);
-    }
-
-    /** Return true iff PLAYER's pieces are continguous. */
-    boolean piecesContiguous(Side player) {
-        int totalPieces = countPieces(player);
-        Set<int[]> contiguousPieces = new HashSet<int[]>();
-        int r = 0;
-        int c = 0;
-    outerloop:
-        for (r = 0; r < LENGTH; r++) {
-            for (c = 0; c < LENGTH; c++) {
-                if (_pieces[r][c].side() == player) {
-                    break outerloop;
-                }
-            }
-        }
-        findAllContiguous(r, c, contiguousPieces);
-        return contiguousPieces.size() == totalPieces;
-    }
-
-    /** find all pieces which are contiguous with _pieces[R][C], and
-     *  add them into FOUND. */
-    void findAllContiguous(int r, int c, Set<int[]> found) {
-        int[] pair = {r, c};
-        if (!contains(found, pair)) {
-            found.add(pair);
-            for (Iterator<int[]> itr
-                    = findAdjacent(r, c).iterator(); itr.hasNext();) {
-                int[] next = itr.next();
-                findAllContiguous(next[0], next[1], found);
-            }
-        }
-    }
-
-    /** Return true if SET contains PAIR. */
-    static boolean contains(Set<int[]> set, int[] pair) {
-        for (Iterator<int[]> itr = set.iterator(); itr.hasNext();) {
-            int[] next = itr.next();
-            if (next[0] == pair[0] && next[1] == pair[1]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** Return the total number of pieces remaining of Side PLAYER. */
-    int countPieces(Side player) {
-        int result = 0;
-        for (Piece[] row : _pieces) {
-            for (Piece piece : row) {
-                if (piece.side() == player) {
-                    result++;
-                }
-            }
-        }
-        return result;
-    }
-
-    /** Return true if the piece at _pieces[R][C] of THIS has
-     * adjacent PIECE of the same side.
-     */
-    Set<int[]> findAdjacent(int r, int c) {
-        Side side = _pieces[r][c].side();
-        Set<int[]> result = new HashSet<int[]>();
-        if (r == 0 && c == 0) {
-            addAdjacent(0, 1, side, result);
-            addAdjacent(1, 1, side, result);
-            addAdjacent(1, 0, side, result);
-        } else if (r == 0 && c == 7) {
-            addAdjacent(0, 6, side, result);
-            addAdjacent(1, 6, side, result);
-            addAdjacent(1, 7, side, result);
-        } else if (r == 7 && c == 0) {
-            addAdjacent(7, 1, side, result);
-            addAdjacent(6, 1, side, result);
-            addAdjacent(6, 0, side, result);
-        } else if (r == 7 && c == 7) {
-            addAdjacent(7, 6, side, result);
-            addAdjacent(6, 6, side, result);
-            addAdjacent(6, 7, side, result);
-        } else if (r == 0) {
-            addAdjacent(0, c - 1, side, result);
-            addAdjacent(0, c + 1, side, result);
-            addAdjacent(1, c - 1, side, result);
-            addAdjacent(1, c, side, result);
-            addAdjacent(1, c + 1, side, result);
-        } else if (r == 7) {
-            addAdjacent(7, c - 1, side, result);
-            addAdjacent(7, c + 1, side, result);
-            addAdjacent(6, c - 1, side, result);
-            addAdjacent(6, c, side, result);
-            addAdjacent(6, c + 1, side, result);
-        } else if (c == 0) {
-            addAdjacent(r - 1, 0, side, result);
-            addAdjacent(r + 1, 0, side, result);
-            addAdjacent(r - 1, 1, side, result);
-            addAdjacent(r, 1, side, result);
-            addAdjacent(r + 1, 1, side, result);
-        } else if (c == 7) {
-            addAdjacent(r - 1, 7, side, result);
-            addAdjacent(r + 1, 7, side, result);
-            addAdjacent(r - 1, 6, side, result);
-            addAdjacent(r, 6, side, result);
-            addAdjacent(r + 1, 6, side, result);
+        if (count == 1) {
+            return true;
         } else {
-            addAdjacent(r - 1, c - 1, side, result);
-            addAdjacent(r - 1, c, side, result);
-            addAdjacent(r - 1, c + 1, side, result);
-            addAdjacent(r, c - 1, side, result);
-            addAdjacent(r, c + 1, side, result);
-            addAdjacent(r + 1, c - 1, side, result);
-            addAdjacent(r + 1, c, side, result);
-            addAdjacent(r + 1, c + 1, side, result);
+            return false;
         }
+    }
+
+    /**
+     * Get score(utility) of current layout for current player
+     * How many part now the board have on current player's side
+     *
+     * @param player
+     * @return
+     */
+    public int getScore(int player) {
+        int score = 0;
+        int[][] temp = new int[map.length][map.length];
+        // assign current layout to temp board
+        for (int i = 0; i < temp.length; i++) {
+            for (int j = 0; j < temp.length; j++) {
+                if (map[i][j] == player) {
+                    temp[i][j] = player;
+                }
+            }
+        }
+        // count how many separate part
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map.length; j++) {
+                if (temp[i][j] == player) {
+                    mark(temp, i, j, player);
+                    score++;
+                }
+            }
+        }
+
+        return score;
+    }
+
+    private void mark(int[][] grid, int i, int j, int player) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid.length || grid[i][j] != player) {
+            return;
+        }
+
+        grid[i][j] = 0;
+        mark(grid, i+1, j, player);
+        mark(grid, i-1, j, player);
+        mark(grid, i, j+1, player);
+        mark(grid, i, j-1, player);
+        mark(grid, i - 1, j - 1, player);
+        mark(grid, i - 1, j + 1, player);
+        mark(grid, i + 1, j - 1, player);
+        mark(grid, i + 1, j + 1, player);
+        return;
+    }
+
+    /**
+     * Get all available checkers for currentPlayer
+     */
+    public ArrayList<Coordinate> getAllAvailableCheckers(int player) {
+        ArrayList<Coordinate> allAvailableChecker = new ArrayList<>();
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map.length; j++) {
+                if (map[i][j] == player) {
+                    allAvailableChecker.add(new Coordinate(i, j));
+                }
+            }
+        }
+        return allAvailableChecker;
+    }    
+    
+    
+    /**
+     * In current layout of game, for current player, generate all possible moves for every available checker
+     * @param player current player
+     * @return
+     */
+    public ArrayList<Move> getAllPossibleMoves(int player) {
+        ArrayList<Move> result = new ArrayList<>();
+        ArrayList<Coordinate> allAvailableChecker = new ArrayList<>();
+        // get all available checkers for this player
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map.length; j++) {
+                if (map[i][j] == player) {
+                    allAvailableChecker.add(new Coordinate(i, j));
+                }
+            }
+        }
+        // get all possible moves from available checkers
+        Step step;
+        for (Coordinate oldCoor : allAvailableChecker) {
+            step = new Step(player, oldCoor, this);
+            ArrayList<Coordinate> currentCheckerHints = step.getHints();
+        for (Coordinate hintCoor : currentCheckerHints) {
+                result.add(new Move(oldCoor, hintCoor)); //add every hint to possible move list
+            }
+        }
+
         return result;
     }
 
-    /** add _pieces[R][C] to PAIRS if its SIDE is the same as the
-     * piece we are looking at. */
-    void addAdjacent(int r, int c, Side side, Set<int[]> pairs) {
-        if (_pieces[r][c].side() == side) {
-            pairs.add(new int[]{r, c});
+    /**
+     * Move checker by provided move
+     * @param move
+     */
+    public void moveChecker(Move move, int player) {
+        lastMove = move;
+        
+        Coordinate oldPos = move.getOriginalPos();
+        Coordinate newPos = move.getTargetPos();
+
+        // set old position to empty
+        this.map[oldPos.getX()][oldPos.getY()] = 0;
+        // set target position to current player's checker
+        this.map[newPos.getX()][newPos.getY()] = player;
+    }
+    
+    
+    /**
+     * Undo the last move made by a particular player
+     * If last move made capture, restore the original checker
+     * @param player
+     */
+    public void undoLastMove(int player) {
+        if(lastMove == null) {
+            return;
+        }
+        int opponentChecker = 0;
+        if (player == 1) {
+            opponentChecker = 2;
+        } else {
+            opponentChecker = 1;
+        }
+        // take care of captured situation
+
+        // return to last position
+        map[lastMove.getOriginalPos().getX()][lastMove.getOriginalPos().getY()] = player;
+    }
+
+    public boolean hasWinner() {
+        if (isWin(1) && !isWin(2)) {
+            return true;
+        } else if (!isWin(1) && isWin(2)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    /** Return the total number of moves that have been made (and not
-     *  retracted).  Each valid call to makeMove with a normal move increases
-     *  this number by 1. */
-    int movesMade() {
-        return _moves.size();
-    }
-
-    /** Returns move #K used to reach the current position, where
-     *  0 <= K < movesMade().  Does not include retracted moves. */
-    Move getMove(int k) {
-        return _moves.get(k);
-    }
-
-    /** Return the configuration of the BOARD. */
-    Piece[][] getBoard() {
-        return _pieces;
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        for (int i = LENGTH - 1; i >= 0; i--) {
-            str.append(" ");
-            for (Piece j : _pieces[i]) {
-                str.append(" " + j.textName());
+    public int CountCheckers(int player) {
+        int count = 0;
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                if (map[i][j] == player) {
+                    count++;
+                }
             }
-            str.append("\n");
         }
-        str.append("Next move: " + _turn.toString().toLowerCase());
-        str.append("\nMoves: " + movesMade());
-        return str.toString();
+        return count;
     }
 
+    public void setMap(int[][] map) {
+        this.map = map;
+    }
 
-    /** The Side currently in turn. */
-    protected Side _turn;
+    public int[][] getMap() {
+        return map;
+    }
 
-    /** The configuration of the board. */
-    protected Piece[][] _pieces;
+/*    public int getTurn() {
+        return turn;
+    }
 
-    /** A list of moves has been make on THIS board. */
-    protected List<Move> _moves = new ArrayList<Move>();
-
-    /** The side length of the board. */
-    static final int LENGTH = 8;
-
-    /** The standard initial configuration for Lines of Action. */
-    static final Piece[][] INITIAL_PIECES = {
-        { EMP, BP,  BP,  BP,  BP,  BP,  BP,  EMP },
-        { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
-        { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
-        { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
-        { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
-        { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
-        { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
-        { EMP, BP,  BP,  BP,  BP,  BP,  BP,  EMP }
-    };
-
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }*/
 }

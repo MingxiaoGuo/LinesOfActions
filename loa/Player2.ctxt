@@ -1,0 +1,17 @@
+#BlueJ class context
+comment0.target=Player2
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Player2\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=x\ y\ gX\ gY\ isUser
+comment1.target=Player2(int,\ int,\ int,\ int,\ boolean)
+comment2.params=
+comment2.target=void\ act()
+comment2.text=\r\n\ Act\ -\ do\ whatever\ the\ Player1\ wants\ to\ do.\ This\ method\ is\ called\ whenever\r\n\ the\ 'Act'\ or\ 'Run'\ button\ gets\ pressed\ in\ the\ environment.\r\n
+comment3.params=newStep
+comment3.target=void\ showHints(Step)
+comment4.params=x\ y
+comment4.target=int[]\ getCenter(int,\ int)
+comment5.params=gridX\ gridY
+comment5.target=int[]\ getMatchBoradCoor(int,\ int)
+comment6.params=boardX\ boardY
+comment6.target=int[]\ matchGrid(int,\ int)
+numComments=7

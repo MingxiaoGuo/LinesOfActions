@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=Move
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Move\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=
+comment1.target=Move()
+comment1.text=\r\n\ Move\ contains\ three\ parameters,\ old\ position,\ new\ position\ and\ current\ player\ making\ the\ move\r\n
+comment2.params=oldPos\ newPos
+comment2.target=Move(Coordinate,\ Coordinate)
+comment2.text=\r\n\ From\ old\ position\ to\ new\ position\r\n\ @param\ oldPos\r\n\ @param\ newPos\r\n
+comment3.params=oldPos\ newPos\ utility
+comment3.target=Move(Coordinate,\ Coordinate,\ int)
+comment4.params=
+comment4.target=Coordinate\ getTargetPos()
+comment5.params=
+comment5.target=Coordinate\ getOriginalPos()
+comment6.params=targetPos
+comment6.target=void\ setTargetPos(Coordinate)
+comment7.params=originalPos
+comment7.target=void\ setOriginalPos(Coordinate)
+comment8.params=utility
+comment8.target=void\ setUtility(int)
+comment9.params=
+comment9.target=int\ getUtility()
+numComments=10
